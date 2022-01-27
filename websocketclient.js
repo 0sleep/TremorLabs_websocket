@@ -1,7 +1,7 @@
 //NOTE: THIS IS SUPPOSED TO BE RUN ON THE COMMAND LINE USING NODE.JS
 console.log("program started!")
 const WebSocket = require('ws');
-var webSocket = new WebSocket("ws://192.168.137.188:80");
+var webSocket = new WebSocket("ws://192.168.137.127:81");
 webSocket.onopen = function(event) {
   console.log("Sending HELO")
   webSocket.send("HELO")

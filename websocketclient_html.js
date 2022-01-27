@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // Create WebSocket connection.
 
 function connect() {
-  const socket = new WebSocket('ws://' + document.getElementById("ip").value + ':80');
+  const socket = new WebSocket('ws://' + document.getElementById("ip").value + ':81');
 
   // Connection opened
   socket.addEventListener('open', function(event) {
@@ -206,7 +206,7 @@ function graphRaw(data) {
   z_data.shift()
   z_data.push(pos[2])
   v_data.shift()
-  v_data.push(Math.sqrt(pos[0]**2+pos[1]**2+pos[2]**2)/800)
+  v_data.push(Math.sqrt(pos[0]**2+pos[1]**2+pos[2]**2))
   counter +=1
   if (counter%10==0) {
     updateChart()
