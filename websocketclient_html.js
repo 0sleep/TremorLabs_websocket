@@ -60,6 +60,16 @@ function updateChart() {
   rawChart.update();
 }
 document.addEventListener("DOMContentLoaded", function() {
+  /* detect if page is being served from ESP or from local*/
+  if (location.protocol == "file:") {
+    //is local file on PC, can't autofill ip
+    console.log("Local page")
+  } else {
+    //is probably hosted from esp32
+    let ip = location.hostname
+    console.log(`Remote page from IP: ${ip}`)
+    document.getElementById("ip").value = ip
+  }
   /* RAW DATA CHART */
   const RCctx = document.getElementById('rawCanv');
   var x_data = new Array(1000) //raw x acceleration
@@ -203,7 +213,7 @@ function graphRaw(data) {
   }
   if (counter%100==0) {
     let processed = fftData(v_data)
-    FCdata.labels = Array.from(Array(processed.real.length).keys())
+    FCdata.labels = processed.imag//Array.from(Array(processed.real.length).keys())
     processed.real[0] = 0
     FCdata.datasets[0].data = processed.real
     fftChart.update()
