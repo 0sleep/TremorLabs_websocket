@@ -13,10 +13,11 @@ const char* ssid = "WR-32-srv"; //Enter SSID
 const char* password = "50N6-99s"; //Enter Password
 //String devicename = "TremorLabs Monitor V2"; //what we want the device to "look" like
 
-unsigned long startMillis;
+unsigned long millisWS;
+unsigned long millisAC;
 unsigned long currentMillis;
-const unsigned long connwait = 10;
-const unsigned long freqwait = 100;
+const unsigned long connwait = 100;
+const unsigned long freqwait = 10;
 
 using namespace websockets;
 
@@ -27,7 +28,7 @@ WebsocketsClient client;
 AsyncWebServer server(80);
 
 void initSDCard(){
-  if(!SD.begin()){
+  if(!SD.begin(27)){
     Serial.println("Card Mount Failed");
     return;
   }
@@ -69,7 +70,8 @@ void setup()
       Serial.print(".");
       delay(1000);
   }
-  startMillis = millis(); //using millis instead of delay for more accurate timing
+  millisWS = millis(); //using millis instead of delay for more accurate timing
+  millisAC = millis();
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
@@ -92,13 +94,14 @@ void setup()
 void loop()
 {
   currentMillis = millis(); //get elapsed millis since boot (overflow every 49 days, this should be fine)
-  if (currentMillis - startMillis >= connwait){
+  if (currentMillis - millisWS >= connwait){
     if (wsServer.poll()) {
       client = wsServer.accept();
       Serial.println("client accepted");
+      millisWS = currentMillis;
     }
   }
-  if (currentMillis - startMillis >= freqwait){
+  if (currentMillis - millisAC >= freqwait){
     if(client.available()) {
       //Serial.println("client available");
       compass.read();
@@ -106,6 +109,7 @@ void loop()
           compass.a.x, compass.a.y, compass.a.z);
       //Serial.println(report);
       client.send(report);
+      millisAC = currentMillis;
     }
   }
 }
