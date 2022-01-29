@@ -187,39 +187,41 @@ function connect() {
   socket.addEventListener('close', function(event) {
     console.log("disconnect occured")
   })
-  window.socket  = socket
+  window.socket = socket
 }
+
 function disconnect() {
-  if (socket){
+  if (socket) {
     socket.close()
   } else {
     console.log("nothing to close!")
   }
 }
 /* signal processing stuff */
-function graphRaw(data) {
+function graphRaw(data) { //handle batches of 10
   let pos = data.split(" ").filter(Number);
-  x_data.shift()
-  x_data.push(pos[0])
-  y_data.shift()
-  y_data.push(pos[1])
-  z_data.shift()
-  z_data.push(pos[2])
-  v_data.shift()
-  v_data.push(Math.sqrt(pos[0]**2+pos[1]**2+pos[2]**2))
-  counter +=1
-  if (counter%10==0) {
-    updateChart()
+  for (let i = 0; i < 10; i++) {
+    x_data.shift()
+    x_data.push(pos[i * 3])
+    y_data.shift()
+    y_data.push(pos[i * 3 + 1])
+    z_data.shift()
+    z_data.push(pos[i * 3 + 2])
+    v_data.shift()
+    v_data.push(Math.sqrt(pos[i * 3] ** 2 + pos[i * 3 + 1] ** 2 + pos[i * 3 + 2] ** 2))
+    counter += 1
   }
-  if (counter%100==0) {
+  updateChart()
+
+  if (counter % 100 == 0) {
     let processed = fftData(v_data)
-    FCdata.labels = processed.imag//Array.from(Array(processed.real.length).keys())
+    FCdata.labels = processed.imag //Array.from(Array(processed.real.length).keys())
     processed.real[0] = 0
     FCdata.datasets[0].data = processed.real
     fftChart.update()
   }
-  if (counter%1000 == 0 && save == true) {//entire array filled once! save this to file thingy
-    for (let i=0;i<1000;i++){
+  if (counter % 1000 == 0 && save == true) { //entire array filled once! save this to file thingy
+    for (let i = 0; i < 1000; i++) {
       fileData.push([x_data[i], y_data[i], z_data[i]])
     }
     counter = 0
@@ -228,22 +230,22 @@ function graphRaw(data) {
 
 function fftData(rawdata) {
   const data = new ComplexArray(512).map((value, i, n) => {
-    value.real = rawdata[999-i]
+    value.real = rawdata[999 - i]
   })
   data.FFT()
   return data
 }
 
 /* file export stuff */
-function download_CSV(){
+function download_CSV() {
   var csv = 'X,Y,Z\n'
   fileData.forEach(row => {
-    csv+=row.join(",")
-    csv+="\n"
+    csv += row.join(",")
+    csv += "\n"
   })
   document.write(csv)
   var hiddenElement = document.createElement('a');
-  hiddenElement.href = 'data:text/csv;charset=utf-8'+encodeURI(csv);
+  hiddenElement.href = 'data:text/csv;charset=utf-8' + encodeURI(csv);
   hiddenElement.target = "_blank"
   hiddenElement.download = "Raw Sensor Data.csv"
   hiddenElement.click()

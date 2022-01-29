@@ -33,7 +33,13 @@ https://github.com/me-no-dev/ESPAsyncWebServer/issues/1085 <- manual fix for ESP
 https://makeradvisor.com/tools/sd-card-module/ <- cheap af reader
 https://lastminuteengineers.com/handling-esp32-gpio-interrupts-tutorial/ <- interrupts might be useful
 https://forum.arduino.cc/t/using-millis-for-timing-a-beginners-guide/483573 <- use this instead of delay! [done]
-https://github.com/me-no-dev/ESPAsyncWebServer#async-websocket-event <- use integrated websocket event from ESPAsyncWebServer!
+https://github.com/me-no-dev/ESPAsyncWebServer#async-websocket-event <- use integrated websocket event from ESPAsyncWebServer! [done]
+https://github.com/me-no-dev/ESPAsyncWebServer/issues/504 <- oh no :( can only send 15 readings over websocket per second...
 
 # TODO
-- use integrated websocket thing in ESPAsyncWebServer to hopefully speed things up. currently rather slow
+- use integrated websocket thing in ESPAsyncWebServer to hopefully speed things up. currently rather slow [done]
+  - still slow, max messages per sec is about 15 for esp32, fix:
+    - batch messages together (may fill heap fast)
+    - events? (not bi-directional...)
+- read wifi connection data from sd card
+- rgb status led for charge, wifi conn, ...

@@ -11,19 +11,16 @@
 const char* ssid = "WR-32-srv"; //Enter SSID
 const char* password = "50N6-99s"; //Enter Password
 //String devicename = "TremorLabs Monitor V2"; //what we want the device to "look" like
+long readings[30]; //sensor readings batch, to avoid
+int ptr = 0; //points to current position in readings
 
 unsigned long millisWS;
 unsigned long millisAC;
 unsigned long currentMillis;
-const unsigned long connwait = 1000;
+const unsigned long connwait = 100;
 const unsigned long freqwait = 10;
 
-//using namespace websockets;
-
-//WebsocketsServer wsServer;
 LSM303 compass;
-char report[80];
-//ebsocketsClient client;
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 
@@ -61,8 +58,7 @@ void wsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventTyp
   }
 }
 
-void setup()
-{
+void setup() {
   Serial.begin(115200);
   initSDCard();
   Wire.begin();
@@ -73,7 +69,6 @@ void setup()
   //Wifi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
   //Wifi.setHostname("TremorLabs Monitor V2"); //set device name
   WiFi.begin(ssid, password);
-  // Wait some time to connect to wifi
   for(int i = 0; i < 15 && WiFi.status() != WL_CONNECTED; i++) {
       Serial.print(".");
       delay(1000);
@@ -85,17 +80,14 @@ void setup()
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());   //Get ESP IP
 
-  //wsServer.listen(81);
-  //Serial.print("WebSocketServer live: ");
-  //Serial.println(wsServer.available());
   Serial.println("Starting WebServer");
   ws.onEvent(wsEvent);
+  server.addHandler(&ws);
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SD, "/page.html", "text/html");
   });
 
   server.serveStatic("/dist/", SD, "/dist/");
-  server.addHandler(&ws);
   server.begin();
 }
 
@@ -104,22 +96,26 @@ void loop()
 {
   currentMillis = millis(); //get elapsed millis since boot (overflow every 49 days, this should be fine)
   if (currentMillis - millisWS >= connwait){
-    /*if (wsServer.poll()) {
-      client = wsServer.accept();
-      Serial.println("client accepted");
-      millisWS = currentMillis;
-      // no longer needed due to auto-accept
-    }*/
     ws.cleanupClients();
+    char outbuf[1024], *put = outbuf;
+    for(int i = 0; i < sizeof readings / sizeof *readings; ++i) {
+      put += snprintf(put, sizeof outbuf - (put - outbuf), "%6d ", readings[i]);
+    }
+    ws.textAll(outbuf);
+    ptr=0;
+    //Serial.println(ws.packetsWaiting()); // ------------------------------------------------------------------------------------------------------------------------------------ find a way to print buffer length. ws._buffers seems to be a linked list :/
+    Serial.println(ESP.getFreeHeap());
+    millisWS = currentMillis;
   }
   if (currentMillis - millisAC >= freqwait){
-    //if(client.available()) {
-      //Serial.println("client available");
       compass.read();
-      ws.printfAll("%6d %6d %6d", compass.a.x, compass.a.y, compass.a.z);
-      Serial.println("sent");
-      Serial.println(currentMillis);
-      //client.send(report);
+      readings[ptr] = compass.a.x;
+      readings[ptr+1] = compass.a.y;
+      readings[ptr+2] = compass.a.z;
+      ptr+=3;
+      //ws.printfAll("%6d %6d %6d", compass.a.x, compass.a.y, compass.a.z);
+      //Serial.println("sent");
+      //Serial.println(currentMillis);
       millisAC = currentMillis;
     //}
   }}
