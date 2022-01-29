@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // Create WebSocket connection.
 
 function connect() {
-  const socket = new WebSocket('ws://' + document.getElementById("ip").value + ':81');
+  const socket = new WebSocket('ws://' + document.getElementById("ip").value + ':80/ws');
 
   // Connection opened
   socket.addEventListener('open', function(event) {
