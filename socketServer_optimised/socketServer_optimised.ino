@@ -2,7 +2,6 @@
 #include <Wire.h>
 #include <LSM303.h>
 #include <AsyncTCP.h>
-//#include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include "FS.h"
 #include "SD.h"
@@ -11,14 +10,15 @@
 const char* ssid = "WR-32-srv"; //Enter SSID
 const char* password = "50N6-99s"; //Enter Password
 //String devicename = "TremorLabs Monitor V2"; //what we want the device to "look" like
-long readings[30]; //sensor readings batch, to avoid
+long readings[30]; //sensor readings batch, to try and limit the messages per second. might not actually help...
 int ptr = 0; //points to current position in readings
+int mode = 0; // 0: idle, 1: stream to page, 2: stream to sd
 
 unsigned long millisWS;
 unsigned long millisAC;
 unsigned long currentMillis;
-const unsigned long connwait = 100;
-const unsigned long freqwait = 10;
+const unsigned long connwait = 200;
+const unsigned long freqwait = 20;
 
 LSM303 compass;
 AsyncWebServer server(80);
@@ -103,8 +103,7 @@ void loop()
     }
     ws.textAll(outbuf);
     ptr=0;
-    //Serial.println(ws.packetsWaiting()); // ------------------------------------------------------------------------------------------------------------------------------------ find a way to print buffer length. ws._buffers seems to be a linked list :/
-    Serial.println(ESP.getFreeHeap());
+    Serial.println(ESP.getFreeHeap()); //should stabilise at a value when socket connected. if this goes down eventually the weboscket will get angry and start lagging a bit
     millisWS = currentMillis;
   }
   if (currentMillis - millisAC >= freqwait){
