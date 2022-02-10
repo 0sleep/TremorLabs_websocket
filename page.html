@@ -7,6 +7,10 @@
   <input id="ip" type="text"></input>
   <button onclick="connect()">CONNECT</button>
   <button onclick="disconnect()">DISCONNECT</button>
+  <button onclick="socket.send('start stream')">Stream on</button>
+  <button onclick="socket.send('stop stream')">Stream off</button>
+  <button onclick="socket.send('start log')">Log to SD on</button>
+  <button onclick="socket.send('stop log')">Stop log</button>
   <button onclick="download_CSV()"> Export Data </button>
   <div id="rawchart"><canvas id="rawCanv" width="400" height="400"></canvas></div>
   <div id="fftchart"><canvas id="fftCanv" width="400" height="400"></canvas></div>

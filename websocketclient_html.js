@@ -202,30 +202,34 @@ function graphRaw(data) { //handle batches of 10
   let pos = data.split(" ").filter(Number);
   for (let i = 0; i < 10; i++) {
     x_data.shift()
-    x_data.push(pos[i * 3])
+    x_data.push(pos[i*3])
     y_data.shift()
-    y_data.push(pos[i * 3 + 1])
+    y_data.push(pos[i*3+1])
     z_data.shift()
-    z_data.push(pos[i * 3 + 2])
+    z_data.push(pos[i*3+2])
     v_data.shift()
-    v_data.push(Math.sqrt(pos[i * 3] ** 2 + pos[i * 3 + 1] ** 2 + pos[i * 3 + 2] ** 2))
-    counter += 1
+    v_data.push(Math.sqrt(pos[i*3] ** 2 + pos[i*3+1] ** 2 + pos[i*3+2] ** 2))
   }
+  counter += 1
   updateChart()
 
   if (counter % 100 == 0) {
     let processed = fftData(v_data)
-    FCdata.labels = processed.imag //Array.from(Array(processed.real.length).keys())
-    processed.real[0] = 0
-    FCdata.datasets[0].data = processed.real
-    fftChart.update()
+    if (isNaN(processed.imag[0])) {
+      console.log("NAN")
+    } else {
+      FCdata.labels = processed.imag //Array.from(Array(processed.real.length).keys())
+      processed.real[0] = 0
+      FCdata.datasets[0].data = processed.real
+      fftChart.update()
+    }
   }
-  if (counter % 1000 == 0 && save == true) { //entire array filled once! save this to file thingy
+  /*if (counter % 1000 == 0 && save == true) { //entire array filled once! save this to file thingy
     for (let i = 0; i < 1000; i++) {
       fileData.push([x_data[i], y_data[i], z_data[i]])
     }
     counter = 0
-  }
+  }*/
 }
 
 function fftData(rawdata) {

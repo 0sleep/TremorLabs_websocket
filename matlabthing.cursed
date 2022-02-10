@@ -1,0 +1,10 @@
+fileID = fopen('tremorCSV', 'r')
+formatSpec = '%3d,%3d,%3d'
+A = fscanf(fileID, formatSpec)'
+
+
+
+file = open("pathtofile")
+out=[]
+for line in file.read().split("\n"):
+  out.append(line.split(","))
