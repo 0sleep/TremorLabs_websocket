@@ -2,6 +2,7 @@
   "dependencies": {
     "chart.js": "^3.7.0",
     "jsfft": "^0.0.4",
+    "showdown": "^2.0.0-alpha",
     "webpack": "^5.67.0",
     "ws": "^8.4.2"
   },

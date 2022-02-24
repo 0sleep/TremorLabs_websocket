@@ -1,0 +1,240 @@
+
+    <html>
+      <head>
+        <title>readmefile</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      </head>
+      <body>
+        <div id='content'>
+    <h1 id="websockets">Websockets!</h1>
+<h2 id="connection">connection</h2>
+<p>(normal)</p>
+<p>esp32 <--- wifi ---> Wifi AP <--- network ---> computer<br />
+C <--- data transfer via websocket protocol ---> webpage<br />
+websocket server                                client<br />
+client              wifi server                 client</p>
+<p>(setup)<br />
+esp32 <--- wifi ---> computer<br />
+webserver            client</p>
+<h2 id="features-ideally">features ideally</h2>
+<ul>
+<li>real time data to webpage via websockets (stream or packet?)</li>
+<li>fast fourier transforms to get frequency</li>
+<li>wifi setup and settings storage in eeprom</li>
+<li>multiple clients?</li>
+<li>data storage / file save?</li>
+</ul>
+<h2 id="what-works-currently">what works currently</h2>
+<ul>
+<li>esp connects to wifi AP</li>
+<li>esp can be websocket server</li>
+<li>esp sends accelerometer data every second to newest client</li>
+</ul>
+<h1 id="stuff-for-esp32">stuff for esp32</h1>
+<p>https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/ &lt;- manage wifi with creds stored in eeprom<br />
+https://www.mischianti.org/2020/06/04/esp32-integrated-spiffs-filesystem-part-2/ &lt;- you have 4 mb<br />
+https://randomnerdtutorials.com/esp32-web-server-microsd-card/ &lt;- but you can serve files off sd card [done]<br />
+https://github.com/me-no-dev/ESPAsyncWebServer/issues/1085 &lt;- manual fix for ESPAsyncWebServer (arduino update broke it :/) [done]<br />
+https://makeradvisor.com/tools/sd-card-module/ &lt;- cheap af reader<br />
+https://lastminuteengineers.com/handling-esp32-gpio-interrupts-tutorial/ &lt;- interrupts might be useful<br />
+https://forum.arduino.cc/t/using-millis-for-timing-a-beginners-guide/483573 &lt;- use this instead of delay! [done]<br />
+https://github.com/me-no-dev/ESPAsyncWebServer#async-websocket-event &lt;- use integrated websocket event from ESPAsyncWebServer! [done]<br />
+https://github.com/me-no-dev/ESPAsyncWebServer/issues/504 &lt;- oh no :( can only send 15 readings over websocket per second…</p>
+<h1 id="todo">TODO</h1>
+<ul>
+<li>use integrated websocket thing in ESPAsyncWebServer to hopefully speed things up. currently rather slow [done]</li>
+<li>still slow, max messages per sec is about 15 for esp32, fix:<ul>
+<li>batch messages together (may fill heap fast)</li>
+<li>events? (not bi-directional…)</li></ul></li>
+<li>read wifi connection data from sd card</li>
+<li>rgb status led for charge, wifi conn, …</li>
+</ul>
+
+        </div>
+        <style type='text/css'>body {
+  font: 400 16px/1.5 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #111;
+  background-color: #fdfdfd;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-feature-settings: "kern" 1;
+  -moz-font-feature-settings: "kern" 1;
+  -o-font-feature-settings: "kern" 1;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+  padding: 30px;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    padding: 5px;
+  }
+
+  body > #content {
+    padding: 0px 20px 20px 20px !important;
+  }
+}
+
+body > #content {
+  margin: 0px;
+  max-width: 900px;
+  border: 1px solid #e1e4e8;
+  padding: 10px 40px;
+  padding-bottom: 20px;
+  border-radius: 2px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+hr {
+  color: #bbb;
+  background-color: #bbb;
+  height: 1px;
+  flex: 0 1 auto;
+  margin: 1em 0;
+  padding: 0;
+  border: none;
+}
+
+/**
+ * Links
+ */
+a {
+  color: #0366d6;
+  text-decoration: none; }
+  a:visited {
+    color: #0366d6; }
+  a:hover {
+    color: #0366d6;
+    text-decoration: underline; }
+
+pre {
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  font-size: 85%;
+  line-height: 1.45;
+  overflow: auto;
+  padding: 16px;
+}
+
+/**
+  * Code blocks
+  */
+
+code {
+  background-color: rgba(27,31,35,.05);
+  border-radius: 3px;
+  font-size: 85%;
+  margin: 0;
+  word-wrap: break-word;
+  padding: .2em .4em;
+  font-family: SFMono-Regular,Consolas,Liberation Mono,Menlo,Courier,monospace;
+}
+
+pre > code {
+  background-color: transparent;
+  border: 0;
+  display: inline;
+  line-height: inherit;
+  margin: 0;
+  overflow: visible;
+  padding: 0;
+  word-wrap: normal;
+  font-size: 100%;
+}
+
+
+/**
+ * Blockquotes
+ */
+blockquote {
+  margin-left: 30px;
+  margin-top: 0px;
+  margin-bottom: 16px;
+  border-left-width: 3px;
+  padding: 0 1em;
+  color: #828282;
+  border-left: 4px solid #e8e8e8;
+  padding-left: 15px;
+  font-size: 18px;
+  letter-spacing: -1px;
+  font-style: italic;
+}
+blockquote * {
+  font-style: normal !important;
+  letter-spacing: 0;
+  color: #6a737d !important;
+}
+
+/**
+ * Tables
+ */
+table {
+  border-spacing: 2px;
+  display: block;
+  font-size: 14px;
+  overflow: auto;
+  width: 100%;
+  margin-bottom: 16px;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+
+th {
+  font-weight: 600;
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+}
+
+tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+
+table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+/**
+ * Others
+ */
+
+img {
+  max-width: 100%;
+}
+
+p {
+  line-height: 24px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #24292e; }
+
+ul {
+  margin-top: 0; }
+
+li {
+  color: #24292e;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5; }
+
+li + li {
+  margin-top: 0.25em; }
+
+* {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  color: #24292e; }
+
+a:visited {
+  color: #0366d6; }
+
+h1, h2, h3 {
+  border-bottom: 1px solid #eaecef;
+  color: #111;
+  /* Darker */ }</style>
+      </body>
+    </html>
