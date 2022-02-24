@@ -23,8 +23,8 @@ webserver            client
 * esp connects to wifi AP
 * esp can be websocket server
 * esp sends accelerometer data every second to newest client
+asas
 
-hi :)
 # stuff for esp32
 https://randomnerdtutorials.com/esp32-wi-fi-manager-asyncwebserver/ <- manage wifi with creds stored in eeprom
 https://www.mischianti.org/2020/06/04/esp32-integrated-spiffs-filesystem-part-2/ <- you have 4 mb
