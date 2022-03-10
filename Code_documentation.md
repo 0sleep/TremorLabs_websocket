@@ -80,12 +80,12 @@ delay(10);
 ```
 Waits for 10 ms
 # sd_logging.ino
+
 This program will take the data and put it on the SD card
 ```cpp
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
-#include "Wire.h"
 #include <LSM303.h>
 
 LSM303 sensor;
@@ -175,7 +175,8 @@ Set the "pointer" to 0 (this variable keeps track of how far we have progressed 
 ```cpp
 for (int i=0; i<100; i++) {
   ...
-}```
+}
+```
 Take 100 readings, at 50 Hz sample rate this would be 2 seconds of data
 ```cpp
 sensor.read();
